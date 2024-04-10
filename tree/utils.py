@@ -21,7 +21,7 @@ class TreeNode:
 
 def build_tree(val_list: list[int]) -> TreeNode:
     def build(idx: int) -> TreeNode | None:
-        if idx >= len(val_list):
+        if idx >= len(val_list) or val_list[idx] is None:
             return None
 
         node = TreeNode(val=val_list[idx])
