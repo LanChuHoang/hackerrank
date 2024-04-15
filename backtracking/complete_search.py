@@ -24,4 +24,30 @@ def gen_subsets(n: int):
     return subsets
 
 
-print(gen_subsets(n=3))
+def gen_permutation(n: int):
+    result = []
+    permutation = []
+    chosen = [False] * n
+
+    def dfs():
+        nonlocal result, permutation
+        if len(permutation) == n:
+            result.append(permutation.copy())
+            return
+
+        for i in range(n):
+            if chosen[i]:
+                continue
+
+            chosen[i] = True
+            permutation.append(i)
+            dfs()
+            chosen[i] = False
+            permutation.pop()
+
+    dfs()
+    return result
+
+
+# print(gen_subsets(n=3))
+print(gen_permutation(n=3))
