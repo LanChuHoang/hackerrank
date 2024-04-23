@@ -93,31 +93,68 @@ class Trie:
         for word in words:
             self.insert(word)
 
-    def startsWith(self, prefix: str) -> list[str]:
-        pass
+    def startsWith(self, prefix: str, limit: int | None = None) -> list[str]:
+        result = []
+
+        def _search_last_node(node: TrieNode | None, index: int):
+            if node is None:
+                return None
+
+            if index == len(prefix) - 1:
+                return node
+
+            return _search_last_node(node.child_nodes[prefix[index + 1]], index + 1)
+
+        last_node = _search_last_node(self.root, -1)
+        if not last_node:
+            return result
+
+        suffix = []
+
+        def _fill_words(node: TrieNode | None):
+            nonlocal result, suffix
+
+            if not node:
+                return
+
+            if node.is_terminal:
+                result.append(prefix + "".join(suffix))
+
+            for child in node.child_nodes.values():
+                if limit and len(result) == limit:
+                    return
+                if child:
+                    suffix.append(child.val)
+                    _fill_words(child)
+                    suffix.pop()
+
+        _fill_words(last_node)
+
+        return result
 
     def print(self):
         pt(self.root)
 
 
-# Your Trie object will be instantiated and called as such:
-obj = Trie()
-obj.insert_many("chu", "chi", "hoa")
-obj
-obj.print()
-print(obj.search("ch"))
-print(obj.search("chu"))
-print(obj.startsWith("ch"))
-print(obj.startsWith("chu"))
-obj.remove("ch")
-obj.print()
-obj.remove("chi")
-obj.print()
-obj.remove("hoa")
-obj.print()
-obj.remove("lan")
-obj.print()
+if __name__ == "__main__":
+    # Your Trie object will be instantiated and called as such:
+    obj = Trie()
+    obj.insert_many("chu", "chi", "hoa", "chim")
+    obj
+    obj.print()
+    # print(obj.search("ch"))
+    # print(obj.search("chu"))
+    # print(obj.startsWith("ch"))
+    # print(obj.startsWith("chu"))
+    # obj.remove("ch")
+    # obj.print()
+    # obj.remove("chi")
+    # obj.print()
+    # obj.remove("hoa")
+    # obj.print()
+    # obj.remove("lan")
+    # obj.print()
+    print(obj.startsWith("ch"))
 
-
-# param_2 = obj.search(word)
-# param_3 = obj.startsWith(prefix)
+    # param_2 = obj.search(word)
+    # param_3 = obj.startsWith(prefix)
