@@ -20,55 +20,54 @@ def o_squared_lis(arr: list[int]):
     return max_so_far
 
 
+def o_nlogn_lis(arr: list[int]):
+    # last_idxs: arr of size n to store the last idx of a set of lists that has length i + 1
+    # -> each loop if we encounter the new element that larger that the last element of the largest list
+    # -> extend the list
+    # if not, change the last element of suitable list, to maximize the protential to form a largest list in the future
+    # (because we replace the current element with the smallest larger one -> so the larger one is useless
+    # -> if we keep the larger -> the future list is always worst)
+    if not arr:
+        return None
+
+    last_idxs = [-1] * len(arr)
+    prev_idxs = [-1] * len(arr)
+
+    last_idxs[0] = 0
+    max_length_so_far = 1
+    for i in range(1, len(arr)):
+        # check whether to extend the list or not
+
+        # if yes -> store new list + idx of the prev el to trace back
+        if arr[i] > arr[last_idxs[max_length_so_far - 1]]:
+            last_idxs[max_length_so_far] = i
+            prev_idxs[i] = last_idxs[max_length_so_far - 1]
+            max_length_so_far += 1
+
+        # else -> binary search the lis_last_idx_list to find the suitable element to replace
+        else:
+            l, r = 0, i - 1  # noqa: E741
+            while l <= r:
+                m = (l + r) // 2
+                mid_el = arr[last_idxs[m]]
+                if arr[i] == mid_el:
+                    last_idxs[m] = i
+                    break
+                elif arr[i] < mid_el:
+                    r = m - 1
+                else:
+                    l = m + 1  # noqa: E741
+            last_idxs[r + 1] = i
+
+    # trace back to compose the result
+    i = last_idxs[max_length_so_far - 1]
+    result = []
+    while i != -1:
+        result.append(arr[i])
+        i = prev_idxs[i]
+    result.reverse()
+    return result
+
+
 if __name__ == "__main__":
-    print(o_squared_lis([6, 2, 5, 1, 7, 4, 8, 3]))
-
-    def lengthOfLIS(nums):
-        # Binary search approach
-        n = len(nums)
-        ans = []
-
-        # Initialize the answer list with the
-        # first element of nums
-        ans.append(nums[0])
-
-        for i in range(1, n):
-            if nums[i] > ans[-1]:
-                # If the current number is greater
-                # than the last element of the answer
-                # list, it means we have found a
-                # longer increasing subsequence.
-                # Hence, we append the current number
-                # to the answer list.
-                ans.append(nums[i])
-            else:
-                # If the current number is not
-                # greater than the last element of
-                # the answer list, we perform
-                # a binary search to find the smallest
-                # element in the answer list that
-                # is greater than or equal to the
-                # current number.
-                low = 0
-                high = len(ans) - 1
-                while low < high:
-                    mid = low + (high - low) // 2
-                    if ans[mid] < nums[i]:
-                        low = mid + 1
-                    else:
-                        high = mid
-                # We update the element at the
-                # found position with the current number.
-                # By doing this, we are maintaining
-                # a sorted order in the answer list.
-                ans[low] = nums[i]
-
-        # The length of the answer list
-        # represents the length of the
-        # longest increasing subsequence.
-        return ans
-
-    # Driver program to test above function
-    nums = [6, 2, 5, 1, 7, 4, 8, 3]
-    # Function call
-    print("Length of LIS is", lengthOfLIS(nums))
+    print(o_nlogn_lis([6, 2, 5, 1, 7, 4, 8, 3]))
