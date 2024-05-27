@@ -19,4 +19,4 @@ class Solution:
         return min_num
 
 
-# print(Solution().findMin([11, 13, 15, 17]))
+print(Solution().findMin([5, 4, 3, 0, 1]))  # --> wrong, leetcode missed this case
