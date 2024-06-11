@@ -27,6 +27,7 @@ class Solution:
         return lcs(0, 0)
 
     def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        # go bottom-up, building from lcs(-1, -1) to lcs(0, 0)
         dp_table = [[0 for _ in range(len(text2) + 1)] for _ in range(len(text1) + 1)]
         for i in reversed(range(len(text1))):
             for j in reversed(range(len(text2))):
