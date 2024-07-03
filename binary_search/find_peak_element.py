@@ -1,5 +1,7 @@
 # https://leetcode.com/problems/find-peak-element/?envType=study-plan-v2&envId=top-interview-150
 
+# https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/description/?envType=study-plan-v2&envId=top-interview-150
+
 
 class Solution:
     def findPeakElement(self, nums: list[int]) -> int:
