@@ -1,20 +1,29 @@
+import random
+
+
 class Solution:
-    def __init__(self, w: list[int]):
-        self.weights = [(we, i) for i, we in enumerate(w)]
-        self.weights.sort()
-        self.n = len(self.weights)
-        self.used = [0 for _ in range(self.n)]
-        self.cur = 0
+    def __init__(self, weights: list[int]):
+        self.cdf = [0]
+        for w in weights:
+            self.cdf.append(self.cdf[-1] + w)
 
     def pickIndex(self) -> int:
-        if self.used[0] == 0:
-            self.used[0] += 1
-            return self.weights[0][1]
-        cur_ratio = self.used[self.cur] / self.used[0]
-        if cur_ratio % self.weights[self.cur][0] == 0:
-            self.cur = (self.cur + 1) % self.n
-        self.used[self.cur] += 1
-        return self.weights[self.cur][1]
+        # Idea: create a cdf array: cumulative distribution function or simply a prefix sum
+        # [0, a0, a1 + a0, a2 + a1 + a0 ...]
+        # then generate a random number from [1, sum(all elements)]
+        # and find the smallest element in the array that >= rand_num
+        # so the probability of getting a0 is # of [1, ... a0] / # of [1,...,sum(all)] = a0/sum(all)
+        # a1: # of [a0 + 1, a0 + 2,..., a1 + a0] / # of [1,...,sum(all)] = a1 / sum(all)
+        # ... and so on
+        rand_num = random.randint(1, self.cdf[-1])
+        l, r = 1, len(self.cdf) - 1
+        while l < r:
+            m = l + (r - l) // 2
+            if self.cdf[m] >= rand_num:
+                r = m
+            else:
+                l = m + 1
+        return l - 1
 
 
 nums = [10, 7, 8, 10]
