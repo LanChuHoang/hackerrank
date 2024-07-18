@@ -5,6 +5,13 @@ from collections import deque
 
 class Solution:
     def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:
+        # Idea: Maintain a non-increasing stack
+        # - every time the window pop the left element, we can check the
+        # the stack to see whether it is the maximum, if it is -> pop the stack
+        # left, then the next maximum will be the next element in the stack
+        # - every time the window push the right element, we insert it the the
+        # stack to create a non-increasing stack, so in the next popping phase
+        # the can get the next maximum
         if len(nums) <= 1:
             return nums
         start, end = 0, k - 1
