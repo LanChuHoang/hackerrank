@@ -1,32 +1,35 @@
 # https://leetcode.com/problems/task-scheduler/description/
 
 import heapq
+from collections import deque, Counter
 
 
 class Solution:
     def leastInterval(self, tasks: list[str], n: int) -> int:
-        heap = []
-        counter = dict()
-        for t in tasks:
-            counter[t] = counter.get(t, 0) + 1
-        for c in counter.values():
-            heapq.heappush(heap, (0, -c))
+        frequency = Counter(tasks)
+        ready_queue = [-f for f in frequency.values()]
+        heapq.heapify(ready_queue)
+        waiting_queue = deque()
 
-        i = 0
-        while heap:
-            top_task = heapq.heappop(heap)
-            next_idx, num_remain = top_task
-
-            next_i = max(i, next_idx)
-            next_idx = i + n + 1
-            num_remain += 1
-            if num_remain != 0:
-                heapq.heappush(heap, (next_idx, num_remain))
-            i = next_i
-        return i + 1
+        t = 0
+        while waiting_queue or ready_queue:
+            if waiting_queue and waiting_queue[0][0] == t:
+                ready_task = waiting_queue.popleft()
+                heapq.heappush(ready_queue, ready_task[1])
+            if ready_queue:
+                num_tasks_left = heapq.heappop(ready_queue)
+                num_tasks_left += 1
+                if num_tasks_left != 0:
+                    available_t = t + n + 1
+                    waiting_queue.append((available_t, num_tasks_left))
+            t += 1
+        return t
 
 
 s = Solution()
+print(
+    s.leastInterval(["A", "A", "A", "A", "A", "A", "B", "C", "D", "E", "F", "G"], n=1)
+)
 print(s.leastInterval(tasks=["A", "A", "A", "B", "B", "B"], n=2))
 print(s.leastInterval(tasks=["A", "C", "A", "B", "D", "B"], n=1))
 print(s.leastInterval(tasks=["A", "A", "A", "B", "B", "B"], n=3))
