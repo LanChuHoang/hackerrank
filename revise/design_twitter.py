@@ -1,34 +1,29 @@
 # https://leetcode.com/problems/design-twitter/description/
 
-import itertools
-import collections
+from itertools import count
 import heapq
-from collections import deque
+from collections import deque, defaultdict
 
 
 class Twitter:
     def __init__(self):
-        self.data = dict()
-        self.timestamp = 0
+        self.timer = count(step=-1)
+        self.posts = defaultdict(deque)
+        self.followees = defaultdict(set)
 
     def postTweet(self, userId: int, tweetId: int) -> None:
-        user_data = self.data.get(
-            userId, {"feed": [], "tweets": dict(), "followers": [], "followed": []}
-        )
-        user_data["tweets"][tweetId] = self.timestamp
-        user_data["feed"] = map(
-            lambda x: x[0],
-            [(v, k) for k, v in enumerate(user_data["tweets"])].sort(reverse=True)[:10],
-        )
-        self.data[userId] = user_data
-        self.timestamp += 1
+        self.posts[userId].appendleft((next(self.timer), tweetId))
+        if len(self.posts[userId]) > 10:
+            self.posts[userId].pop()
 
     def getNewsFeed(self, userId: int) -> list[int]:
-        return self.data[userId]["feed"]
+        all_posts = heapq.merge(
+            *(self.posts[uid] for uid in self.followees[userId] | {userId})
+        )
+        return [t_id for _, t_id in all_posts][:10]
 
     def follow(self, followerId: int, followeeId: int) -> None:
-        # self.data[]
-        pass
+        self.followees[followerId].add(followeeId)
 
     def unfollow(self, followerId: int, followeeId: int) -> None:
-        pass
+        self.followees[followerId].discard(followeeId)
