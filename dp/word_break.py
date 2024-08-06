@@ -19,6 +19,13 @@ class Solution:
         return solvable(0, "")
 
     def wordBreak(self, s: str, wordDict: list[str]) -> bool:
+        # Idea:
+        # f(i) = if we put the break here, can we form the string using words
+        # f(i) = f(j) or f(j + 1) or ... f(m)
+        # for j in [i, m] with m is the max word length
+        # and s[i: j + 1] in words
+        # f(i) = True if i == n -> reach the end safely
+
         dp = [False for _ in range(len(s) + 1)]
         dp[-1] = True
 

@@ -13,7 +13,7 @@ class Solution:
             min_prod[i] = min(nums[i], with_next_max, with_next_min)
         return max(max_prod)
 
-    def maxProduct(self, nums: list[int]) -> int:
+    def maxProduct_v2(self, nums: list[int]) -> int:
         max_prod = nums[-1]
         min_prod = nums[-1]
         result = max_prod
@@ -24,6 +24,22 @@ class Solution:
             min_prod = min(nums[i], with_next_max, with_next_min)
             result = max(result, max_prod)
         return result
+
+    def maxProduct(self, nums: list[int]) -> int:
+        # Idea:
+        # f(i) = max(nums[i], nums[i] * f(i + 1), nums[i] * f'(i + 1))
+        # f(i): max subarray prod that start at i
+        # f'(i): min subarray prod that start at i
+        # because if nums[i] is negative, we want to multiply it with the min
+        # prod of subarray that start at [i + 1] to maximize the prod at i
+
+        n = len(nums)
+        res, cur_max, cur_min = nums[-1], nums[-1], nums[-1]
+        for i in range(n - 2, -1, -1):
+            options = (nums[i], nums[i] * cur_max, nums[i] * cur_min)
+            cur_max, cur_min = max(options), min(options)
+            res = max(res, cur_max)
+        return res
 
 
 solution = Solution()
